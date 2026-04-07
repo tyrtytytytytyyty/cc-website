@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CC — Conglomerate Collective</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── RESET & BASE ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #06060e;
+      --bg2:      #0d0d1a;
+      --bg3:      #111127;
+      --accent:   #5b7cff;
+      --accent2:  #a259ff;
+      --cyan:     #00e5ff;
+      --gold:     #ffd166;
+      --text:     #f0f0ff;
+      --muted:    #8888aa;
+      --border:   rgba(255,255,255,0.07);
+      --glass:    rgba(255,255,255,0.04);
+      --radius:   16px;
+      --radius-lg:28px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    ::selection { background: rgba(91,124,255,0.35); color: #fff; }
+
+    /* ─── SCROLLBAR ────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+    /* ─── CANVAS BG ────────────────────────────────────────────────── */
+    #bg-canvas {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ─── NAV ──────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 20px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background 0.4s, backdrop-filter 0.4s, border-bottom 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(6,6,14,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+    }
+    .nav-logo span {
+      font-size: 0.6rem;
+      font-weight: 400;
+      letter-spacing: 3px;
+      display: block;
+      background: none;
+      -webkit-text-fill-color: var(--muted);
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-top: -4px;
+    }
+
+    .nav-links {
+      display: flex; gap: 36px; list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.88rem; font-weight: 500; letter-spacing: 0.3px;
+      transition: color 0.25s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      padding: 10px 24px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none; border-radius: 50px;
+      color: #fff; font-weight: 600; font-size: 0.85rem;
+      cursor: pointer; text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 24px rgba(91,124,255,0.35);
+    }
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(91,124,255,0.5);
+    }
+
+    /* ─── HERO ─────────────────────────────────────────────────────── */
+    .hero {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      overflow: hidden;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 18px;
+      border: 1px solid rgba(91,124,255,0.35);
+      border-radius: 50px;
+      background: rgba(91,124,255,0.08);
+      font-size: 0.78rem; font-weight: 500; letter-spacing: 1px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      animation: fadeUp 0.8s ease both;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      animation: pulse 2s ease infinite;
+    }
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 8vw, 7.5rem);
+      font-weight: 700;
+      line-height: 1.0;
+      letter-spacing: -3px;
+      max-width: 900px;
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+
+    .hero-title .gradient-word {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      margin-top: 24px;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--muted);
+      max-width: 560px;
+      line-height: 1.7;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .hero-actions {
+      margin-top: 44px;
+      display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    .btn-primary {
+      padding: 16px 36px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none; border-radius: 50px;
+      color: #fff; font-weight: 700; font-size: 1rem;
+      cursor: pointer; text-decoration: none;
+      box-shadow: 0 0 32px rgba(91,124,255,0.4);
+      transition: transform 0.25s, box-shadow 0.25s;
+      letter-spacing: 0.3px;
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(91,124,255,0.55);
+    }
+
+    .btn-ghost {
+      padding: 15px 36px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      color: var(--text); font-weight: 600; font-size: 1rem;
+      cursor: pointer; text-decoration: none;
+      backdrop-filter: blur(10px);
+      background: var(--glass);
+      transition: border-color 0.25s, background 0.25s, transform 0.25s;
+    }
+    .btn-ghost:hover {
+      border-color: rgba(91,124,255,0.4);
+      background: rgba(91,124,255,0.08);
+      transform: translateY(-3px);
+    }
+
+    .hero-scroll {
+      margin-top: 80px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      animation: fadeUp 0.8s 0.6s ease both;
+      color: var(--muted); font-size: 0.78rem; letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .hero-scroll-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      animation: scrollLine 2s ease infinite;
+    }
+
+    /* stats strip */
+    .hero-stats {
+      margin-top: 64px;
+      display: flex; gap: 48px; flex-wrap: wrap; justify-content: center;
+      animation: fadeUp 0.8s 0.45s ease both;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.4rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+
+    /* ─── MARQUEE ───────────────────────────────────────────────────── */
+    .marquee-wrap {
+      position: relative; z-index: 1;
+      overflow: hidden;
+      padding: 18px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+    }
+    .marquee-track {
+      display: flex; gap: 64px;
+      width: max-content;
+      animation: marquee 28s linear infinite;
+    }
+    .marquee-item {
+      display: flex; align-items: center; gap: 16px;
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--muted);
+      white-space: nowrap;
+    }
+    .marquee-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ─── SECTION COMMONS ───────────────────────────────────────────── */
+    section { position: relative; z-index: 1; }
+
+    .section-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .section-label {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .section-label::before {
+      content: '';
+      width: 24px; height: 2px;
+      background: var(--accent);
+      border-radius: 1px;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+    }
+
+    .section-sub {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.7;
+      margin-top: 14px;
+    }
+
+    /* ─── SERVICES ─────────────────────────────────────────────────── */
+    .services {
+      padding: 120px 0;
+      background: var(--bg);
+    }
+
+    .services-header {
+      margin-bottom: 64px;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .service-card {
+      padding: 36px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      position: relative; overflow: hidden;
+      transition: transform 0.35s, border-color 0.35s, box-shadow 0.35s;
+      cursor: default;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(91,124,255,0.08), transparent 40%);
+      opacity: 0; transition: opacity 0.35s;
+    }
+    .service-card:hover::before { opacity: 1; }
+    .service-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(91,124,255,0.3);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+    }
+
+    .service-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .service-icon.blue  { background: rgba(91,124,255,0.15); }
+    .service-icon.purple{ background: rgba(162,89,255,0.15); }
+    .service-icon.cyan  { background: rgba(0,229,255,0.12); }
+    .service-icon.gold  { background: rgba(255,209,102,0.12); }
+
+    .service-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem; font-weight: 600;
+      margin-bottom: 12px; letter-spacing: -0.3px;
+    }
+    .service-card p { color: var(--muted); font-size: 0.92rem; line-height: 1.7; }
+
+    .service-tag {
+      display: inline-flex; margin-top: 20px;
+      padding: 4px 12px;
+      background: rgba(91,124,255,0.1);
+      border: 1px solid rgba(91,124,255,0.2);
+      border-radius: 50px;
+      font-size: 0.72rem; font-weight: 600;
+      color: var(--accent); letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* ─── PROCESS ──────────────────────────────────────────────────── */
+    .process {
+      padding: 120px 0;
+      background: var(--bg2);
+    }
+
+    .process-grid {
+      margin-top: 64px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0;
+      position: relative;
+    }
+    .process-grid::before {
+      content: '';
+      position: absolute;
+      top: 32px; left: 60px; right: 60px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--accent), var(--accent2), transparent);
+      opacity: 0.3;
+    }
+
+    .process-step {
+      padding: 32px 28px;
+      text-align: center;
+      position: relative;
+    }
+    .process-num {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.4rem; font-weight: 700;
+      margin: 0 auto 24px;
+      box-shadow: 0 0 32px rgba(91,124,255,0.35);
+      position: relative; z-index: 1;
+    }
+    .process-step h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem; font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .process-step p { color: var(--muted); font-size: 0.88rem; line-height: 1.7; }
+
+    /* ─── WHY US ────────────────────────────────────────────────────── */
+    .why {
+      padding: 120px 0;
+      background: var(--bg);
+    }
+
+    .why-layout {
+      margin-top: 64px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .why-visual {
+      position: relative;
+      aspect-ratio: 1;
+      max-width: 480px;
+    }
+    .why-card {
+      position: absolute;
+      padding: 20px 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg3);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+    }
+    .why-card-main {
+      inset: 10% 0;
+      display: flex; flex-direction: column; justify-content: center;
+      background: linear-gradient(135deg, var(--bg3), rgba(91,124,255,0.08));
+      border-color: rgba(91,124,255,0.2);
+    }
+    .why-card-floating1 {
+      bottom: -20px; right: -24px;
+      width: 200px;
+      animation: float1 6s ease-in-out infinite;
+    }
+    .why-card-floating2 {
+      top: -20px; left: -24px;
+      width: 180px;
+      animation: float2 7s ease-in-out infinite;
+    }
+
+    .why-metric {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.8rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .why-metric-label { color: var(--muted); font-size: 0.85rem; margin-top: 4px; }
+
+    .why-list { display: flex; flex-direction: column; gap: 24px; }
+
+    .why-item {
+      display: flex; gap: 18px; align-items: flex-start;
+    }
+    .why-item-icon {
+      width: 42px; height: 42px; flex-shrink: 0;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      background: rgba(91,124,255,0.1);
+      border: 1px solid rgba(91,124,255,0.15);
+    }
+    .why-item h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem; font-weight: 600; margin-bottom: 4px;
+    }
+    .why-item p { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+
+    /* ─── PORTFOLIO ─────────────────────────────────────────────────── */
+    .portfolio {
+      padding: 120px 0;
+      background: var(--bg2);
+    }
+
+    .portfolio-grid {
+      margin-top: 64px;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
+    }
+
+    .portfolio-item {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      min-height: 280px;
+      transition: transform 0.4s, box-shadow 0.4s;
+      cursor: pointer;
+    }
+    .portfolio-item:hover { transform: scale(1.02); box-shadow: 0 24px 64px rgba(0,0,0,0.5); }
+
+    .portfolio-item:nth-child(1) { grid-column: span 7; }
+    .portfolio-item:nth-child(2) { grid-column: span 5; }
+    .portfolio-item:nth-child(3) { grid-column: span 5; }
+    .portfolio-item:nth-child(4) { grid-column: span 7; }
+
+    .portfolio-bg {
+      position: absolute; inset: 0;
+      opacity: 0.6;
+    }
+    .pf1 { background: linear-gradient(135deg, #1a1a4e 0%, #0d2a4a 50%, #0a1a2e 100%); }
+    .pf2 { background: linear-gradient(135deg, #1a0d2e 0%, #2d1a4a 100%); }
+    .pf3 { background: linear-gradient(135deg, #0a2e1a 0%, #0d3a2a 100%); }
+    .pf4 { background: linear-gradient(135deg, #2e1a0a 0%, #3a2a0d 100%); }
+
+    /* mockup window inside portfolio */
+    .pf-mockup {
+      position: absolute;
+      inset: 24px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+      background: rgba(0,0,0,0.5);
+    }
+    .pf-bar {
+      height: 28px;
+      background: rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 12px;
+    }
+    .pf-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .pf-dot:nth-child(1) { background: #ff5f57; }
+    .pf-dot:nth-child(2) { background: #febc2e; }
+    .pf-dot:nth-child(3) { background: #28c840; }
+
+    .pf-content {
+      padding: 16px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .pf-line {
+      height: 8px; border-radius: 4px;
+      background: rgba(255,255,255,0.08);
+    }
+    .pf-line.accent { background: rgba(91,124,255,0.35); }
+    .pf-line.short { width: 60%; }
+    .pf-line.med   { width: 80%; }
+
+    .portfolio-label {
+      position: absolute; bottom: 24px; left: 24px; right: 24px;
+      display: flex; align-items: flex-end; justify-content: space-between;
+    }
+    .portfolio-label h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem; font-weight: 600;
+    }
+    .portfolio-label .tag {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--accent);
+      background: rgba(91,124,255,0.12);
+      border: 1px solid rgba(91,124,255,0.2);
+      padding: 4px 10px; border-radius: 50px;
+    }
+
+    /* ─── PRICING ───────────────────────────────────────────────────── */
+    .pricing {
+      padding: 120px 0;
+      background: var(--bg);
+    }
+
+    .pricing-grid {
+      margin-top: 64px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+
+    .pricing-card {
+      padding: 40px 36px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--glass);
+      position: relative; overflow: hidden;
+      transition: transform 0.35s, box-shadow 0.35s;
+    }
+    .pricing-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+    }
+    .pricing-card.featured {
+      border-color: rgba(91,124,255,0.45);
+      background: linear-gradient(160deg, rgba(91,124,255,0.08), rgba(162,89,255,0.06));
+      box-shadow: 0 0 48px rgba(91,124,255,0.15);
+    }
+    .pricing-card.featured::before {
+      content: 'Most Popular';
+      position: absolute; top: 20px; right: 20px;
+      padding: 4px 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 50px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px;
+    }
+
+    .pricing-plan {
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .pricing-price {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem; font-weight: 700; letter-spacing: -2px;
+      margin-bottom: 4px;
+    }
+    .pricing-price sup { font-size: 1.4rem; vertical-align: top; margin-top: 10px; display: inline-block; }
+    .pricing-price .period { font-size: 1rem; color: var(--muted); letter-spacing: 0; font-weight: 400; }
+    .pricing-desc { color: var(--muted); font-size: 0.88rem; margin-bottom: 28px; }
+
+    .pricing-divider {
+      width: 100%; height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+    }
+
+    .pricing-features { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .pricing-features li {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 0.9rem; color: var(--muted);
+    }
+    .pricing-features li::before {
+      content: '✓';
+      width: 20px; height: 20px; flex-shrink: 0;
+      border-radius: 50%;
+      background: rgba(91,124,255,0.15);
+      color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 700;
+    }
+    .pricing-features li.dim { color: rgba(136,136,170,0.45); }
+    .pricing-features li.dim::before {
+      content: '—';
+      background: rgba(255,255,255,0.04);
+      color: rgba(136,136,170,0.4);
+    }
+
+    .pricing-btn {
+      display: block; width: 100%;
+      margin-top: 32px;
+      padding: 14px;
+      text-align: center;
+      border-radius: 50px;
+      font-weight: 700; font-size: 0.92rem;
+      text-decoration: none;
+      transition: transform 0.25s, box-shadow 0.25s;
+      cursor: pointer;
+    }
+    .pricing-btn.outline {
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: var(--glass);
+    }
+    .pricing-btn.outline:hover {
+      border-color: rgba(91,124,255,0.35);
+      background: rgba(91,124,255,0.06);
+      transform: translateY(-2px);
+    }
+    .pricing-btn.filled {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none;
+      box-shadow: 0 0 24px rgba(91,124,255,0.35);
+    }
+    .pricing-btn.filled:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(91,124,255,0.55);
+    }
+
+    /* ─── TESTIMONIALS ──────────────────────────────────────────────── */
+    .testimonials {
+      padding: 120px 0;
+      background: var(--bg2);
+    }
+
+    .testimonials-grid {
+      margin-top: 64px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .testimonial-card {
+      padding: 32px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      transition: transform 0.35s, border-color 0.35s;
+    }
+    .testimonial-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(91,124,255,0.25);
+    }
+
+    .testimonial-stars { color: var(--gold); font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 16px; }
+
+    .testimonial-quote {
+      font-size: 0.95rem; line-height: 1.75; color: rgba(240,240,255,0.85);
+      margin-bottom: 24px;
+      font-style: italic;
+    }
+
+    .testimonial-author { display: flex; align-items: center; gap: 14px; }
+    .testimonial-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1rem; flex-shrink: 0;
+    }
+    .av1 { background: linear-gradient(135deg, #5b7cff, #a259ff); }
+    .av2 { background: linear-gradient(135deg, #00e5ff, #5b7cff); }
+    .av3 { background: linear-gradient(135deg, #ff6b6b, #ffd166); }
+    .testimonial-name { font-weight: 600; font-size: 0.92rem; }
+    .testimonial-role { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+    /* ─── CTA ───────────────────────────────────────────────────────── */
+    .cta-section {
+      padding: 120px 0;
+      background: var(--bg);
+      text-align: center;
+    }
+
+    .cta-box {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 72px 48px;
+      border: 1px solid rgba(91,124,255,0.25);
+      border-radius: 32px;
+      background: linear-gradient(160deg, rgba(91,124,255,0.08), rgba(162,89,255,0.06));
+      position: relative; overflow: hidden;
+    }
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      top: -80px; left: 50%; transform: translateX(-50%);
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(91,124,255,0.15), transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-box .section-label { justify-content: center; }
+    .cta-box .section-title { text-align: center; max-width: 520px; margin: 0 auto; }
+    .cta-box .section-sub { text-align: center; margin: 16px auto 0; }
+    .cta-box .hero-actions { margin-top: 36px; }
+
+    /* ─── FOOTER ────────────────────────────────────────────────────── */
+    footer {
+      position: relative; z-index: 1;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 64px 0 36px;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand p {
+      color: var(--muted); font-size: 0.88rem; line-height: 1.7;
+      margin-top: 14px; max-width: 260px;
+    }
+
+    .footer-col h4 {
+      font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 18px;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col a {
+      color: rgba(240,240,255,0.65); text-decoration: none;
+      font-size: 0.9rem; transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--text); }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .footer-bottom p { color: var(--muted); font-size: 0.82rem; }
+    .footer-socials { display: flex; gap: 12px; }
+    .social-btn {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; color: var(--muted);
+      text-decoration: none;
+      transition: border-color 0.25s, color 0.25s, background 0.25s;
+    }
+    .social-btn:hover {
+      border-color: rgba(91,124,255,0.35);
+      color: var(--accent);
+      background: rgba(91,124,255,0.08);
+    }
+
+    /* ─── CONTACT SECTION ───────────────────────────────────────────── */
+    .contact {
+      padding: 120px 0;
+      background: var(--bg2);
+    }
+
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+      margin-top: 64px;
+    }
+
+    .contact-info { display: flex; flex-direction: column; gap: 24px; }
+
+    .contact-item {
+      display: flex; gap: 16px; align-items: flex-start;
+    }
+    .contact-item-icon {
+      width: 44px; height: 44px; flex-shrink: 0;
+      border-radius: 12px;
+      background: rgba(91,124,255,0.1);
+      border: 1px solid rgba(91,124,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+    .contact-item h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
+    .contact-item p { color: var(--muted); font-size: 0.88rem; }
+
+    .contact-form {
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { font-size: 0.82rem; font-weight: 500; color: var(--muted); }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      padding: 13px 16px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text); font-family: inherit; font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+      resize: none;
+      -webkit-appearance: none;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: rgba(91,124,255,0.5);
+      box-shadow: 0 0 0 3px rgba(91,124,255,0.1);
+    }
+    .form-group textarea { min-height: 120px; }
+    .form-group select option { background: var(--bg3); }
+
+    .form-submit {
+      padding: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none; border-radius: 50px;
+      color: #fff; font-weight: 700; font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 0 28px rgba(91,124,255,0.35);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .form-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 36px rgba(91,124,255,0.5);
+    }
+
+    /* ─── REVEAL ANIMATIONS ────────────────────────────────────────── */
+    .reveal {
+      opacity: 0; transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ─── KEYFRAMES ────────────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: none; }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.6; }
+    }
+    @keyframes scrollLine {
+      0% { transform: scaleY(0); transform-origin: top; }
+      50% { transform: scaleY(1); transform-origin: top; }
+      51% { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @keyframes float1 {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-12px) rotate(-2deg); }
+    }
+    @keyframes float2 {
+      0%, 100% { transform: translateY(0) rotate(1deg); }
+      50% { transform: translateY(14px) rotate(1deg); }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* ─── RESPONSIVE ───────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 18px 24px; }
+      .nav-links { display: none; }
+      .why-layout { grid-template-columns: 1fr; }
+      .why-visual { display: none; }
+      .portfolio-item:nth-child(1),
+      .portfolio-item:nth-child(2),
+      .portfolio-item:nth-child(3),
+      .portfolio-item:nth-child(4) { grid-column: span 12; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+      .contact-layout { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .process-grid::before { display: none; }
+    }
+
+    @media (max-width: 560px) {
+      .footer-top { grid-template-columns: 1fr; }
+      .hero-stats { gap: 28px; }
+      .cta-box { padding: 48px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ░░ CANVAS BACKGROUND ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- ░░ NAV ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    CC
+    <span>Conglomerate Collective</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#portfolio">Work</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Get Started</a>
+</nav>
+
+<!-- ░░ HERO ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<section class="hero">
+  <div class="hero-badge">Augusta's Premier Web Studio</div>
+  <h1 class="hero-title">
+    Websites That<br/>
+    <span class="gradient-word">Dominate</span><br/>
+    Your Market
+  </h1>
+  <p class="hero-sub">
+    We build bold, high-converting websites for Augusta businesses
+    ready to stand out, scale up, and win online.
+  </p>
+  <div class="hero-actions">
+    <a href="#contact" class="btn-primary">Start Your Project</a>
+    <a href="#portfolio" class="btn-ghost">See Our Work</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num" data-count="50">0</div>
+      <div class="hero-stat-label">Sites Launched</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num" data-count="100">0</div>
+      <div class="hero-stat-label">Client Satisfaction</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num" data-count="14">0</div>
+      <div class="hero-stat-label">Day Avg. Delivery</div>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- ░░ MARQUEE ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item"><div class="marquee-dot"></div>Web Design</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Brand Identity</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>SEO Optimization</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>E-Commerce</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Landing Pages</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Mobile-First Design</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Augusta, GA</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Lead Generation</div>
+    <!-- duplicate for seamless loop -->
+    <div class="marquee-item"><div class="marquee-dot"></div>Web Design</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Brand Identity</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>SEO Optimization</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>E-Commerce</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Landing Pages</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Mobile-First Design</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Augusta, GA</div>
+    <div class="marquee-item"><div class="marquee-dot"></div>Lead Generation</div>
+  </div>
+</div>
+
+<!-- ░░ SERVICES ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<section class="services" id="services">
+  <div class="section-inner">
+    <div class="services-header">
+      <div class="section-label reveal">What We Do</div>
+      <h2 class="section-title reveal reveal-delay-1">Everything Your<br/>Business Needs Online</h2>
+      <p class="section-sub reveal reveal-delay-2">From a simple brochure site to a full e-commerce platform — we've got the expertise to make it happen fast and make it look incredible.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card reveal" data-mouse>
+        <div class="service-icon blue">🎨</div>
+        <h3>Custom Web Design</h3>
+        <p>Pixel-perfect, mobile-first designs built to reflect your brand and convert visitors into customers. No templates — fully custom for you.</p>
+        <span class="service-tag">Design</span>
+      </div>
+      <div class="service-card reveal reveal-delay-1" data-mouse>
+        <div class="service-icon purple">⚡</div>
+        <h3>High-Performance Dev</h3>
+        <p>Lightning-fast sites built with modern code. Perfect Lighthouse scores, optimized images, and blazing load times that keep visitors engaged.</p>
+        <span class="service-tag">Development</span>
+      </div>
+      <div class="service-card reveal reveal-delay-2" data-mouse>
+        <div class="service-icon cyan">📈</div>
+        <h3>SEO & Growth</h3>
+        <p>Get found on Google. We bake SEO best practices right into every build so Augusta customers can discover you when it matters most.</p>
+        <span class="service-tag">Marketing</span>
+      </div>
+      <div class="service-card reveal reveal-delay-3" data-mouse>
+        <div class="service-icon gold">🛒</div>
+        <h3>E-Commerce Solutions</h3>
+        <p>Ready to sell online? We build sleek, secure online stores that make purchasing effortless and drive repeat business.</p>
+        <span class="service-tag">E-Commerce</span>
+      </div>
+      <div class="service-card reveal reveal-delay-1" data-mouse>
+        <div class="service-icon blue">📱</div>
+        <h3>Mobile-First Builds</h3>
+        <p>Over 60% of your visitors are on phones. We design for mobile first, then scale up — so every experience is flawless on any device.</p>
+        <span class="service-tag">Mobile</span>
+      </div>
+      <div class="service-card reveal reveal-delay-2" data-mouse>
+        <div class="service-icon purple">🔧</div>
+        <h3>Ongoing Support</h3>
+        <p>Your website is a living thing. We offer maintenance, updates, and support plans to keep your site fast, secure, and current — always.</p>
+        <span class="service-tag">Support</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ PROCESS ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<section class="process" id="process">
+  <div class="section-inner">
+    <div class="section-label reveal">How It Works</div>
+    <h2 class="section-title reveal reveal-delay-1">From Idea to<br/>Launch in Days</h2>
+    <p class="section-sub reveal reveal-delay-2">Our streamlined four-step process removes the guesswork and gets your business online faster than you ever thought possible.</p>
+    <div class="process-grid">
+      <div class="process-step reveal">
+        <div class="process-num">01</div>
+        <h3>Discovery Call</h3>
+        <p>We sit down (or hop on a call) and learn everything about your business, goals, and target audience in Augusta.</p>
+      </div>
+      <div class="process-step reveal reveal-delay-1">
+        <div class="process-num">02</div>
+        <h3>Design & Strategy</h3>
+        <p>Our team crafts a visual strategy and wireframes tailored to your brand — you approve before we build a single line of code.</p>
+      </div>
+      <div class="process-step reveal reveal-delay-2">
+        <div class="process-num">03</div>
+        <h3>Build & Refine</h3>
+        <p>We develop your site with modern tech, keeping you in the loop with progress updates and revision rounds.</p>
+      </div>
+      <div class="process-step reveal reveal-delay-3">
+        <div class="process-num">04</div>
+        <h3>Launch & Grow</h3>
+        <p>We go live, run final checks, and hand you the keys — plus stay on board to make sure everything performs perfectly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ WHY US ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<section class="why" id="why">
+  <div class="section-inner">
+    <div class="why-layout">
+      <div>
+        <div class="section-label reveal">Why CC</div>
+        <h2 class="section-title reveal reveal-delay-1">Built for Augusta.<br/>Built to Win.</h2>
+        <p class="section-sub reveal reveal-delay-2">We're not some faceless agency. We're local, we care, and we know what Augusta businesses need to compete online.</p>
+        <div class="why-list" style="margin-top:40px">
+          <div class="why-item reveal reveal-delay-1">
+            <div class="why-item-icon">🏙️</div>
+            <div>
+              <h4>Local Market Knowledge</h4>
+              <p>We understand the Augusta market — from the Medical District to downtown — and design with your customers in mind.</p>
+            </div>
+          </div>
+          <div class="why-item reveal reveal-delay-2">
+            <div class="why-item-icon">🚀</div>
+            <div>
+              <h4>Fast Turnaround</h4>
+              <p>Most websites are live within 2–3 weeks. No month-long waits. We respect your time and move with urgency.</p>
+            </div>
+          </div>
+          <div class="why-item reveal reveal-delay-3">
+            <div class="why-item-icon">💰</div>
+            <div>
+              <h4>Transparent Pricing</h4>
+              <p>Flat-rate packages with no hidden fees. You'll know exactly what you're getting and what it costs before we start.</p>
+            </div>
+          </div>
+          <div class="why-item reveal reveal-delay-4">
+            <div class="why-item-icon">🤝</div>
+            <div>
+              <h4>Ongoing Partnership</h4>
+              <p>We're in it for the long haul. Your success is our portfolio — and we'll keep showing up to help you grow.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="why-visual reveal reveal-delay-2">
+        <div class="why-card why-card-main">
+          <div class="why-metric">98%</div>
+          <div class="why-metric-label">Client Retention Rate</div>
+          <div style="height:1px;background:var(--border);margin:20px 0"></div>
+          <div style="display:flex;gap:24px">
+            <div>
+              <div class="why-metric" style="font-size:1.8rem">50+</div>
+              <div class="why-metric-label">Projects Done</div>
+            </div>
+            <div>
+              <div class="why-metric" style="font-size:1.8rem">⭐ 5.0</div>
+              <div class="why-metric-label">Avg. Rating</div>
+            </div>
+          </div>
+        </div>
+        <div class="why-card why-card-floating1">
+          <div style="font-size:1.4rem;margin-bottom:6px">📈</div>
+          <div style="font-size:0.82rem;font-weight:600;margin-bottom:2px">Traffic Up</div>
+          <div style="font-size:1.5rem;font-weight:700;color:var(--cyan)">+340%</div>
+          <div style="font-size:0.72rem;color:var(--muted)">avg. 6 months post-launch</div>
+        </div>
+        <div class="why-card why-card-floating2">
+          <div style="font-size:1.4rem;margin-bottom:6px">⚡</div>
+          <div style="font-size:0.82rem;font-weight:600;margin-bottom:2px">Page Speed</div>
+          <div style="font-size:1.5rem;font-weight:700;color:var(--gold)">99/100</div>
+          <div style="font-size:0.72rem;color:var(--muted)">Google Lighthouse score</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ PORTFOLIO ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<section class="portfolio" id="portfolio">
+  <div class="section-inner">
+    <div class="section-label reveal">Our Work</div>
+    <h2 class="section-title reveal reveal-delay-1">Crafted With<br/>Intention</h2>
+    <p class="section-sub reveal reveal-delay-2">Every project is a story. Here's a look at some of the work we're proud to have built for businesses just like yours.</p>
+    <div class="portfolio-grid">
+      <div class="portfolio-item reveal">
+        <div class="portfolio-bg pf1"></div>
+        <div class="pf-mockup">
+          <div class="pf-bar"><div class="pf-dot"></div><div class="pf-dot"></div><div class="pf-dot"></div></div>
+          <div class="pf-content">
+            <div class="pf-line accent" style="width:45%;height:14px;margin-bottom:8px"></div>
+            <div class="pf-line short"></div>
+            <div class="pf-line med"></div>
+            <div class="pf-line" style="width:55%"></div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <div style="height:64px;flex:1;background:rgba(91,124,255,0.15);border-radius:8px"></div>
+              <div style="height:64px;flex:1;background:rgba(162,89,255,0.1);border-radius:8px"></div>
+              <div style="height:64px;flex:1;background:rgba(0,229,255,0.08);border-radius:8px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="portfolio-label">
+          <div>
+            <h3>Augusta Medical Spa</h3>
+            <div style="font-size:0.78rem;color:var(--muted);margin-top:3px">Healthcare & Wellness</div>
+          </div>
+          <div class="tag">Design + Dev</div>
+        </div>
+      </div>
+      <div class="portfolio-item reveal reveal-delay-1">
+        <div class="portfolio-bg pf2"></div>
+        <div class="pf-mockup">
+          <div class="pf-bar"><div class="pf-dot"></div><div class="pf-dot"></div><div class="pf-dot"></div></div>
+          <div class="pf-content">
+            <div class="pf-line accent" style="width:70%;height:12px;margin-bottom:10px"></div>
+            <div class="pf-line"></div>
+            <div class="pf-line short"></div>
+            <div style="height:80px;background:rgba(162,89,255,0.12);border-radius:8px;margin-top:12px"></div>
+          </div>
+        </div>
+        <div class="portfolio-label">
+          <div>
+            <h3>River Grille CSRA</h3>
+            <div style="font-size:0.78rem;color:var(--muted);margin-top:3px">Restaurant & Food</div>
+          </div>
+          <div class="tag">E-Commerce</div>
+        </div>
+      </div>
+      <div class="portfolio-item reveal reveal-delay-2">
+        <div class="portfolio-bg pf3"></div>
+        <div class="pf-mockup">
+          <div class="pf-bar"><div class="pf-dot"></div><div class="pf-dot"></div><div class="pf-dot"></div></div>
+          <div class="pf-content">
+            <div style="height:90px;background:rgba(0,229,255,0.08);border-radius:8px;margin-bottom:10px"></div>
+            <div class="pf-line med"></div>
+            <div class="pf-line short"></div>
+          </div>
+        </div>
+        <div class="portfolio-label">
+          <div>
+            <h3>Augusta Law Group</h3>
+            <div style="font-size:0.78rem;color:var(--muted);margin-top:3px">Legal Services</div>
+          </div>
+          <div class="tag">Landing Page</div>
+        </div>
+      </div>
+      <div class="portfolio-item reveal reveal-delay-3">
+        <div class="portfolio-bg pf4"></div>
+        <div class="pf-mockup">
+          <div class="pf-bar"><div class="pf-dot"></div><div class="pf-dot"></div><div class="pf-dot"></div></div>
+          <div class="pf-content">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div style="height:56px;background:rgba(255,209,102,0.1);border-radius:8px"></div>
+              <div style="height:56px;background:rgba(255,209,102,0.06);border-radius:8px"></div>
+              <div style="height:56px;background:rgba(255,209,102,0.06);border-radius:8px"></div>
+              <div style="height:56px;background:rgba(255,209,102,0.1);border-radius:8px"></div>
+            </div>
+            <div class="pf-line accent" style="margin-top:10px;background:rgba(255,209,102,0.25)"></div>
+          </div>
+        </div>
+        <div class="portfolio-label">
+          <div>
+            <h3>CSRA Home Builders</h3>
+            <div style="font-size:0.78rem;color:var(--muted);margin-top:3px">Real Estate & Construction</div>
+          </div>
+          <div class="tag">Full Build</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ PRICING ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<section class="pricing" id="pricing">
+  <div class="section-inner">
+    <div class="section-label reveal">Pricing</div>
+    <h2 class="section-title reveal reveal-delay-1">Simple, Honest<br/>Pricing</h2>
+    <p class="section-sub reveal reveal-delay-2">No mystery quotes. No bait-and-switch. Pick a package that fits where you are today — upgrade anytime.</p>
+    <div class="pricing-grid">
+      <div class="pricing-card reveal">
+        <div class="pricing-plan">Starter</div>
+        <div class="pricing-price"><sup>$</sup>999</div>
+        <div class="pricing-desc">Perfect for new businesses that need a clean, professional web presence fast.</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li>Up to 5 pages</li>
+          <li>Mobile-responsive design</li>
+          <li>Contact form</li>
+          <li>SEO basics setup</li>
+          <li>1 revision round</li>
+          <li class="dim">E-Commerce</li>
+          <li class="dim">Custom animations</li>
+          <li class="dim">Priority support</li>
+        </ul>
+        <a href="#contact" class="pricing-btn outline">Get Started</a>
+      </div>
+      <div class="pricing-card featured reveal reveal-delay-1">
+        <div class="pricing-plan">Growth</div>
+        <div class="pricing-price"><sup>$</sup>2,499</div>
+        <div class="pricing-desc">For established businesses ready to dominate locally and grow their online leads.</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li>Up to 12 pages</li>
+          <li>Custom animations & interactions</li>
+          <li>Advanced SEO + Google Analytics</li>
+          <li>Blog / CMS integration</li>
+          <li>3 revision rounds</li>
+          <li>Lead capture & forms</li>
+          <li>30-day support included</li>
+          <li class="dim">Full e-commerce</li>
+        </ul>
+        <a href="#contact" class="pricing-btn filled">Get Started</a>
+      </div>
+      <div class="pricing-card reveal reveal-delay-2">
+        <div class="pricing-plan">Enterprise</div>
+        <div class="pricing-price" style="font-size:2rem;letter-spacing:-1px">Custom</div>
+        <div class="pricing-desc">Full-scale builds, e-commerce platforms, and custom web applications for serious businesses.</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li>Unlimited pages</li>
+          <li>Full e-commerce store</li>
+          <li>Custom web app features</li>
+          <li>Advanced SEO strategy</li>
+          <li>Unlimited revisions</li>
+          <li>Priority 24/7 support</li>
+          <li>Dedicated project manager</li>
+          <li>Monthly reporting</li>
+        </ul>
+        <a href="#contact" class="pricing-btn outline">Let's Talk</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ TESTIMONIALS ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<section class="testimonials" id="testimonials">
+  <div class="section-inner">
+    <div class="section-label reveal">Testimonials</div>
+    <h2 class="section-title reveal reveal-delay-1">Augusta Businesses<br/>Trust CC</h2>
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-quote">"CC completely transformed our online presence. Within a month of launch, we were getting 3x more inquiries. The design is stunning and our clients constantly compliment it."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar av1">MJ</div>
+          <div>
+            <div class="testimonial-name">Marcus Johnson</div>
+            <div class="testimonial-role">Owner, Johnson Insurance Group · Augusta</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal reveal-delay-1">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-quote">"I was skeptical about the investment but CC delivered beyond my expectations. The site looks amazing and our online bookings jumped immediately after launch. Absolutely worth it."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar av2">SR</div>
+          <div>
+            <div class="testimonial-name">Sofia Reyes</div>
+            <div class="testimonial-role">Founder, Bella Studio Spa · Martinez, GA</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal reveal-delay-2">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-quote">"Professional, fast, and genuinely invested in our success. CC built our entire e-commerce store in under three weeks and it works flawlessly. Highly recommend to any local business."</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar av3">DW</div>
+          <div>
+            <div class="testimonial-name">Derek Williams</div>
+            <div class="testimonial-role">CEO, Palmetto Premium Goods · Aiken, SC</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ CONTACT ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<section class="contact" id="contact">
+  <div class="section-inner">
+    <div class="section-label reveal">Let's Talk</div>
+    <h2 class="section-title reveal reveal-delay-1">Ready to Build<br/>Something Great?</h2>
+    <div class="contact-layout">
+      <div class="contact-info">
+        <p class="section-sub reveal" style="margin-top:0">Tell us about your business and we'll get back to you within one business day with a plan to get you online.</p>
+        <div class="contact-item reveal reveal-delay-1">
+          <div class="contact-item-icon">📍</div>
+          <div>
+            <h4>Location</h4>
+            <p>Augusta, Georgia — Serving the entire CSRA</p>
+          </div>
+        </div>
+        <div class="contact-item reveal reveal-delay-2">
+          <div class="contact-item-icon">✉️</div>
+          <div>
+            <h4>Email</h4>
+            <p>hello@conglomeratecollective.com</p>
+          </div>
+        </div>
+        <div class="contact-item reveal reveal-delay-3">
+          <div class="contact-item-icon">📞</div>
+          <div>
+            <h4>Phone</h4>
+            <p>(706) 000-0000</p>
+          </div>
+        </div>
+        <div class="contact-item reveal reveal-delay-4">
+          <div class="contact-item-icon">🕐</div>
+          <div>
+            <h4>Response Time</h4>
+            <p>Within 1 business day — usually same day</p>
+          </div>
+        </div>
+      </div>
+      <form class="contact-form reveal reveal-delay-1" onsubmit="handleSubmit(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fname">First Name</label>
+            <input type="text" id="fname" placeholder="John" required />
+          </div>
+          <div class="form-group">
+            <label for="lname">Last Name</label>
+            <input type="text" id="lname" placeholder="Smith" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="john@yourbusiness.com" required />
+        </div>
+        <div class="form-group">
+          <label for="business">Business Name</label>
+          <input type="text" id="business" placeholder="Your Business LLC" />
+        </div>
+        <div class="form-group">
+          <label for="service">Service Interested In</label>
+          <select id="service">
+            <option value="">Select a service...</option>
+            <option>Custom Web Design</option>
+            <option>E-Commerce Store</option>
+            <option>Landing Page</option>
+            <option>Website Redesign</option>
+            <option>SEO & Marketing</option>
+            <option>Monthly Maintenance</option>
+            <option>Not Sure — Let's Chat</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="message">Tell Us About Your Project</label>
+          <textarea id="message" placeholder="What are your goals? What does your current situation look like? Any details help..."></textarea>
+        </div>
+        <button type="submit" class="form-submit">Send Message →</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ CTA ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<section class="cta-section">
+  <div class="section-inner">
+    <div class="cta-box reveal">
+      <div class="section-label">Start Today</div>
+      <h2 class="section-title">Your Competitors<br/>Already Have a Website.</h2>
+      <p class="section-sub">Don't let them take your customers. Let CC build you a site that turns heads and drives business in Augusta.</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn-primary">Get a Free Consultation</a>
+        <a href="tel:7060000000" class="btn-ghost">Call Us Now</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ FOOTER ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo" style="font-size:1.4rem">
+          CC
+          <span>Conglomerate Collective</span>
+        </a>
+        <p>Augusta's premier web design studio, building digital experiences that help local businesses thrive online.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#services">Web Design</a></li>
+          <li><a href="#services">E-Commerce</a></li>
+          <li><a href="#services">SEO & Marketing</a></li>
+          <li><a href="#services">Monthly Support</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#why">About CC</a></li>
+          <li><a href="#portfolio">Our Work</a></li>
+          <li><a href="#process">Our Process</a></li>
+          <li><a href="#testimonials">Reviews</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Get In Touch</h4>
+        <ul>
+          <li><a href="#contact">Start a Project</a></li>
+          <li><a href="#pricing">View Pricing</a></li>
+          <li><a href="mailto:hello@conglomeratecollective.com">Email Us</a></li>
+          <li><a href="tel:7060000000">Call Us</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Conglomerate Collective. All rights reserved. Augusta, GA.</p>
+      <div class="footer-socials">
+        <a href="#" class="social-btn" title="Instagram">📷</a>
+        <a href="#" class="social-btn" title="Facebook">📘</a>
+        <a href="#" class="social-btn" title="LinkedIn">💼</a>
+        <a href="#" class="social-btn" title="X / Twitter">𝕏</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ░░ SCRIPTS ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<script>
+/* ── Particle Canvas ───────────────────────────────────────────────── */
+(function () {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], mouse = { x: -999, y: -999 };
+
+  const COLORS = ['#5b7cff', '#a259ff', '#00e5ff', '#ffd166'];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  function Particle() {
+    this.reset();
+  }
+  Particle.prototype.reset = function () {
+    this.x = rand(0, W);
+    this.y = rand(0, H);
+    this.vx = rand(-0.3, 0.3);
+    this.vy = rand(-0.3, 0.3);
+    this.r  = rand(1, 2.5);
+    this.alpha = rand(0.2, 0.6);
+    this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    this.life = rand(0, Math.PI * 2);
+    this.speed = rand(0.005, 0.015);
+  };
+  Particle.prototype.update = function () {
+    this.life += this.speed;
+    this.x += this.vx + Math.sin(this.life) * 0.15;
+    this.y += this.vy + Math.cos(this.life) * 0.15;
+    if (this.x < -50) this.x = W + 50;
+    if (this.x > W + 50) this.x = -50;
+    if (this.y < -50) this.y = H + 50;
+    if (this.y > H + 50) this.y = -50;
+  };
+
+  function init() {
+    resize();
+    particles = [];
+    const N = Math.min(Math.floor(W * H / 14000), 80);
+    for (let i = 0; i < N; i++) particles.push(new Particle());
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d  = Math.sqrt(dx * dx + dy * dy);
+        if (d < 140) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(91,124,255,${0.06 * (1 - d / 140)})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+      // mouse repulse
+      const mdx = particles[i].x - mouse.x;
+      const mdy = particles[i].y - mouse.y;
+      const md  = Math.sqrt(mdx * mdx + mdy * mdy);
+      if (md < 120) {
+        particles[i].x += (mdx / md) * 1.5;
+        particles[i].y += (mdy / md) * 1.5;
+      }
+    }
+
+    // draw dots
+    particles.forEach(p => {
+      p.update();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color + Math.round(p.alpha * 255).toString(16).padStart(2,'0');
+      ctx.fill();
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', init);
+  window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  init();
+  draw();
+})();
+
+/* ── Nav scroll ────────────────────────────────────────────────────── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+/* ── Scroll reveal ─────────────────────────────────────────────────── */
+const reveals = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); }
+  });
+}, { threshold: 0.12 });
+reveals.forEach(el => revealObs.observe(el));
+
+/* ── Counter animation ─────────────────────────────────────────────── */
+const counters = document.querySelectorAll('[data-count]');
+const counterObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target;
+    const target = +el.dataset.count;
+    const suffix = target === 100 ? '%' : target === 14 ? ' days' : '+';
+    let current = 0;
+    const step = target / 60;
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.textContent = Math.floor(current) + suffix;
+      if (current >= target) clearInterval(timer);
+    }, 16);
+    counterObs.unobserve(el);
+  });
+}, { threshold: 0.5 });
+counters.forEach(c => counterObs.observe(c));
+
+/* ── Mouse gradient on service cards ───────────────────────────────── */
+document.querySelectorAll('[data-mouse]').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
+    card.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100) + '%');
+  });
+});
+
+/* ── Form submit ───────────────────────────────────────────────────── */
+function handleSubmit(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('.form-submit');
+  btn.textContent = '✓ Message Sent! We\'ll be in touch soon.';
+  btn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+  btn.disabled = true;
+  e.target.reset();
+}
+
+/* ── Smooth anchor scroll ───────────────────────────────────────────── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+</body>
+</html>
